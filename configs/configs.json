@@ -1,0 +1,38 @@
+[ 
+    {
+      "_index" : ".kibana",
+      "_type" : "visualization",
+      "_id" : "rx_tx_bytes-of-top-5-containers-on-cluster",
+      "_source":{"title":"rx_tx_bytes of top 5 containers on cluster","visState":"{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"smoothLines\":false,\"scale\":\"linear\",\"interpolate\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"sum\",\"schema\":\"metric\",\"params\":{\"field\":\"Value\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"UpdatedAt\",\"interval\":\"m\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"Name\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}},{\"id\":\"4\",\"type\":\"terms\",\"schema\":\"split\",\"params\":{\"field\":\"ContainerName\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"row\":true}}],\"listeners\":{}}","description":"","savedSearchId":"Search-for-all-interfaces-except-lo","version":1,"kibanaSavedObjectMeta":{"searchSourceJSON":"{\"filter\":[]}"}}
+    }, {
+      "_index" : ".kibana",
+      "_type" : "visualization",
+      "_id" : "Number-of-containers-running-per-minute-top-5-nodes",
+      "_source":{"title":"Number of containers running per minute top 5 nodes","visState":"{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"smoothLines\":false,\"scale\":\"linear\",\"interpolate\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"cardinality\",\"schema\":\"metric\",\"params\":{\"field\":\"ContainerDockerID\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"UpdatedAt\",\"interval\":\"m\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"NodeName\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\"}}],\"listeners\":{}}","description":"","savedSearchId":"Search-for-all-interfaces-except-lo","version":1,"kibanaSavedObjectMeta":{"searchSourceJSON":"{\"filter\":[]}"}}
+    }, {
+      "_index" : ".kibana",
+      "_type" : "visualization",
+      "_id" : "Number-of-containers-running-per-hour-on-cluster",
+      "_source":{"title":"Number of containers running per minute on cluster","visState":"{\"type\": \"area\",\"params\": {\"shareYAxis\": true,\"addTooltip\": true,\"addLegend\": true,\"smoothLines\": false,\"scale\": \"linear\",\"interpolate\": \"linear\",\"mode\": \"stacked\",\"times\": [],\"addTimeMarker\": false,\"defaultYExtents\": false,\"setYExtents\": false,\"yAxis\": {}},\"aggs\": [{\"id\": \"1\",\"type\": \"cardinality\",\"schema\": \"metric\",\"params\": {\"field\": \"ContainerDockerID\"}},{\"id\": \"2\",\"type\": \"date_histogram\",\"schema\": \"segment\",\"params\": {\"field\": \"UpdatedAt\",\"interval\": \"m\",\"customInterval\": \"2h\",\"min_doc_count\": 1,\"extended_bounds\": {}}}],\"listeners\": {}}","description":"","savedSearchId":"Search-for-all-interfaces-except-lo","version":1,"kibanaSavedObjectMeta":{"searchSourceJSON":"{\"filter\": []}"}}
+    }, {
+      "_index" : ".kibana",
+      "_type" : "search",
+      "_id" : "Search-for-all-interfaces-except-lo",
+      "_source":{"title":"Search for all interfaces except lo","description":"","hits":0,"columns":["_source"],"sort":["UpdatedAt","desc"],"version":1,"kibanaSavedObjectMeta":{"searchSourceJSON":"{\"index\":\"[docker-collector-]YYYY-MM-DD\",\"query\":{\"query_string\":{\"query\":\"NOT NetworkInterfaceName: lo AND (Name : rx_bytes OR Name: tx_bytes)\",\"analyze_wildcard\":true}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"filter\":[]}"}}
+    }, {
+      "_index" : ".kibana",
+      "_type" : "index-pattern",
+      "_id" : "[docker-collector-]YYYY-MM-DD",
+      "_source":{"title":"[docker-collector-]YYYY-MM-DD","timeFieldName":"UpdatedAt","intervalName":"days","fields":"[{\"name\":\"ContainerDockerID\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"indexed\":true,\"analyzed\":true,\"doc_values\":false},{\"name\":\"_index\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"indexed\":false,\"analyzed\":false,\"doc_values\":false},{\"name\":\"NodeName\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"indexed\":true,\"analyzed\":false,\"doc_values\":false},{\"name\":\"_type\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"indexed\":true,\"analyzed\":false,\"doc_values\":false},{\"name\":\"NetworkInterfaceName\",\"type\":\"string\",\"count\":2,\"scripted\":false,\"indexed\":true,\"analyzed\":false,\"doc_values\":false},{\"name\":\"UpdatedAt\",\"type\":\"date\",\"count\":0,\"scripted\":false,\"indexed\":true,\"analyzed\":false,\"doc_values\":false},{\"name\":\"Name\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"indexed\":true,\"analyzed\":false,\"doc_values\":false},{\"name\":\"ContainerName\",\"type\":\"string\",\"count\":2,\"scripted\":false,\"indexed\":true,\"analyzed\":false,\"doc_values\":false},{\"name\":\"Value\",\"type\":\"number\",\"count\":0,\"scripted\":false,\"indexed\":true,\"analyzed\":false,\"doc_values\":false},{\"name\":\"_source\",\"type\":\"_source\",\"count\":0,\"scripted\":false,\"indexed\":false,\"analyzed\":false,\"doc_values\":false},{\"name\":\"_id\",\"type\":\"string\",\"count\":0,\"scripted\":false,\"indexed\":false,\"analyzed\":false,\"doc_values\":false}]"}
+    }, {
+      "_index" : ".kibana",
+      "_type" : "config",
+      "_id" : "4.1.1",
+      "_source":{"buildNum":7489,"defaultIndex":"[docker-collector-]YYYY-MM-DD"}
+    }, {
+      "_index" : ".kibana",
+      "_type" : "dashboard",
+      "_id" : "docker-collector-dashboard",
+      "_source":{"title":"docker-collector dashboard","hits":0,"description":"","panelsJSON":"[{\"col\":1,\"id\":\"Number-of-containers-running-per-hour-on-cluster\",\"row\":1,\"size_x\":5,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Number-of-containers-running-per-minute-top-5-nodes\",\"row\":3,\"size_x\":5,\"size_y\":2,\"type\":\"visualization\"},{\"col\":6,\"id\":\"rx_tx_bytes-of-top-5-containers-on-cluster\",\"row\":1,\"size_x\":7,\"size_y\":4,\"type\":\"visualization\"}]","version":1,"timeRestore":false,"kibanaSavedObjectMeta":{"searchSourceJSON":"{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"}}
+    }
+]

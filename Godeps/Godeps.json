@@ -1,0 +1,31 @@
+{
+	"ImportPath": "github.com/cilium-team/docker-collector",
+	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/docker/docker/pkg/units",
+			"Comment": "v1.4.1-4830-g757c4f0",
+			"Rev": "757c4f0d5cbc30cf2455fbd412e50368b2b933a1"
+		},
+		{
+			"ImportPath": "github.com/fsouza/go-dockerclient",
+			"Rev": "134c9ac46b51ace9135c81efe9aa9895d346c1cf"
+		},
+		{
+			"ImportPath": "github.com/olivere/elastic",
+			"Comment": "v2.0.7-7-g4f7f226",
+			"Rev": "4f7f226858234271e6f94138e70b2a29d731b41e"
+		},
+		{
+			"ImportPath": "github.com/op/go-logging",
+			"Rev": "e8d5414f0947014548c2334044a0fac13187dfee"
+		},
+		{
+			"ImportPath": "github.com/samalba/dockerclient",
+			"Rev": "8802d66ce78e69ff16692f6fa89ad969a5711b8b"
+		}
+	]
+}

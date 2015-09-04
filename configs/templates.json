@@ -1,0 +1,13 @@
+[ 
+    {
+      "_index" : ".kibana",
+      "_type" : "search",
+      "_id" : "Search-for-all-interfaces-except-lo-in-$NodeName$",
+      "_source":{"title":"Search for all interfaces except lo in $NodeName$","description":"","hits":0,"columns":["_source"],"sort":["UpdatedAt","desc"],"version":1,"kibanaSavedObjectMeta":{"searchSourceJSON":"{\"index\":\"[docker-collector-]YYYY-MM-DD\",\"query\":{\"query_string\":{\"query\":\"NOT NetworkInterfaceName: lo AND (Name : rx_bytes OR Name: tx_bytes) AND NodeName: $NodeName$\",\"analyze_wildcard\":true}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"filter\":[]}"}}
+    }, {
+      "_index" : ".kibana",
+      "_type" : "visualization",
+      "_id" : "rx_tx_bytes-of-top-5-containers-in-$NodeName$",
+      "_source":{"title":"rx_tx_bytes of top 5 containers in $NodeName$","visState":"{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"smoothLines\":false,\"scale\":\"linear\",\"interpolate\":\"linear\",\"mode\":\"stacked\",\"times\":[],\"addTimeMarker\":false,\"defaultYExtents\":false,\"setYExtents\":false,\"yAxis\":{}},\"aggs\":[{\"id\":\"1\",\"type\":\"sum\",\"schema\":\"metric\",\"params\":{\"field\":\"Value\"}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"UpdatedAt\",\"interval\":\"m\",\"customInterval\":\"2h\",\"min_doc_count\":1,\"extended_bounds\":{}}},{\"id\":\"3\",\"type\":\"terms\",\"schema\":\"group\",\"params\":{\"field\":\"Name\",\"size\":2,\"order\":\"desc\",\"orderBy\":\"1\"}},{\"id\":\"4\",\"type\":\"terms\",\"schema\":\"split\",\"params\":{\"field\":\"ContainerName\",\"size\":5,\"order\":\"desc\",\"orderBy\":\"1\",\"row\":true}}],\"listeners\":{}}","description":"","savedSearchId":"Search-for-all-interfaces-except-lo-in-$NodeName$","version":1,"kibanaSavedObjectMeta":{"searchSourceJSON":"{\"filter\":[]}"}}
+    }
+]

@@ -1,0 +1,9 @@
+Godeps
+docs
+utils
+scripts
+Dockerfile
+Makefile
+*.go
+.*
+*swp
