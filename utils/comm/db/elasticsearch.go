@@ -8,7 +8,7 @@ import (
 
 	uc "github.com/cilium-team/docker-collector/utils/comm"
 
-	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/github.com/olivere/elastic"
+	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/gopkg.in/olivere/elastic.v2"
 )
 
 type EConn struct {
@@ -135,47 +135,33 @@ func NewElasticConnTo(ip, port, indexName, configPath string) (EConn, error) {
 	var outerr error
 	clientInit.Do(func() {
 		logTimename := time.Now().Format(logNameTimeFormat)
-		fo, err := os.Create(os.TempDir() + "/docker-collector-out-" + logTimename + ".log")
+		fo, err := os.Create(os.TempDir() + "/docker-collector-elastic-out-" + logTimename + ".log")
 		if err != nil {
 			l.Fatalf("Error while creating a log file: %s", err)
 		}
-		fe, err := os.Create(os.TempDir() + "/docker-collector-error-" + logTimename + ".log")
+		fe, err := os.Create(os.TempDir() + "/docker-collector-elastic-error-" + logTimename + ".log")
 		if err != nil {
 			l.Fatalf("Error while creating a log file: %s", err)
 		}
-		//		ft, err := os.Create(os.TempDir() + "/docker-collector-trace-" + logTimename + ".log")
+		//		ft, err := os.Create(os.TempDir() + "/docker-collector-elastic-trace-" + logTimename + ".log")
 		//		if err != nil {
 		//			l.Fatalf("Error while creating a log file: %s", err)
 		//		}
-		l.Printf("connecting to %s, %s", ip, port)
+		l.Printf("Trying to connect to ElasticSearch to '%s':'%s'\n", ip, port)
 
-		//Waiting for this to be solved: https://github.com/olivere/elastic/issues/124
-		wait := time.Second * 1
-		retries := 10
-		l.Printf("Trying to connect to ElasticSearch\n")
-		for {
-			ec.Client, err = elastic.NewClient(
-				elastic.SetURL("http://"+ip+":"+port),
-				elastic.SetMaxRetries(10),
-				elastic.SetHealthcheckTimeoutStartup(10*time.Second),
-				elastic.SetSniff(false),
-				elastic.SetErrorLog(l.New(fe, "", l.LstdFlags)),
-				elastic.SetInfoLog(l.New(fo, "", l.LstdFlags)),
-				//elastic.SetTraceLog(l.New(ft, "", l.LstdFlags)),
-			)
-			l.Printf("Attempt %d...\n", 11-retries)
-			if err == elastic.ErrNoClient {
-				retries--
-				if retries < 0 {
-					break
-				}
-				time.Sleep(wait)
-				wait += wait
-			}
-			if err == nil {
-				l.Printf("Success!")
-				break
-			}
+		ec.Client, err = elastic.NewClient(
+			elastic.SetURL("http://"+ip+":"+port),
+			elastic.SetMaxRetries(10),
+			elastic.SetHealthcheckTimeoutStartup(30*time.Second),
+			elastic.SetSniff(false),
+			elastic.SetErrorLog(l.New(fe, "", l.LstdFlags)),
+			elastic.SetInfoLog(l.New(fo, "", l.LstdFlags)),
+			//elastic.SetTraceLog(l.New(ft, "", l.LstdFlags)),
+		)
+		if err == nil {
+			l.Printf("Success!\n")
+		} else {
+			l.Printf("Error %+v\n", err)
 		}
 		ec.indexName = indexName
 		ec.configPath = configPath

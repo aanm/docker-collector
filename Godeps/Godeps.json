@@ -7,17 +7,12 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/docker/docker/pkg/units",
-			"Comment": "v1.4.1-4830-g757c4f0",
-			"Rev": "757c4f0d5cbc30cf2455fbd412e50368b2b933a1"
+			"Comment": "v1.4.1-6094-g58ae808",
+			"Rev": "58ae808d426d1ad524b9088b02c9f4df951a10d8"
 		},
 		{
 			"ImportPath": "github.com/fsouza/go-dockerclient",
-			"Rev": "134c9ac46b51ace9135c81efe9aa9895d346c1cf"
-		},
-		{
-			"ImportPath": "github.com/olivere/elastic",
-			"Comment": "v2.0.7-7-g4f7f226",
-			"Rev": "4f7f226858234271e6f94138e70b2a29d731b41e"
+			"Rev": "9ff3a0b2d27e65b3865609e0cbba9fb0511a781b"
 		},
 		{
 			"ImportPath": "github.com/op/go-logging",
@@ -25,7 +20,12 @@
 		},
 		{
 			"ImportPath": "github.com/samalba/dockerclient",
-			"Rev": "8802d66ce78e69ff16692f6fa89ad969a5711b8b"
+			"Rev": "77b723e2c0d07a21cc9483dc6108f95bd403b576"
+		},
+		{
+			"ImportPath": "gopkg.in/olivere/elastic.v2",
+			"Comment": "v2.0.7",
+			"Rev": "34055ce91f8c34ab593d35cc77fedd41b7b08baa"
 		}
 	]
 }

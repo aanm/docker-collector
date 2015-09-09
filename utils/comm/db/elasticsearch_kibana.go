@@ -9,7 +9,7 @@ import (
 
 	uc "github.com/cilium-team/docker-collector/utils/comm"
 
-	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/github.com/olivere/elastic"
+	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/gopkg.in/olivere/elastic.v2"
 )
 
 const (
