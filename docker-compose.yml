@@ -1,0 +1,18 @@
+collector:
+  image: cilium/docker-collector
+  command: docker-collector -f 'docker-collector*'
+  pid: "host"
+  privileged: true
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+  environment:
+    - ELASTIC_IP=elastic
+  links:
+    - elastic
+
+elastic:
+  image: elasticsearch:1.7.1
+  command: elasticsearch
+  ports:
+    - 9200:9200
+    - 9300:9300
