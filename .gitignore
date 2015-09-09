@@ -2,7 +2,7 @@
 *.o
 *.a
 *.so
-docker-collector
+docker-collector-*
 
 # Folders
 _obj
@@ -21,6 +21,3 @@ _cgo_export.*
 
 _testmain.go
 
-*.exe
-*.test
-*.prof
