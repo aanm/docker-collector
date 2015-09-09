@@ -4,7 +4,7 @@
 KERNEL:= $(shell uname -s)
 MACHINE := $(shell uname -m)
 
-tests:
+tests: docker-collector
 	@godep go test ./...
 
 docker-collector-production: clean tests
@@ -17,9 +17,12 @@ docker-collector:
 
 clean:
 	@godep go clean -i
+	@rm docker-collector-${KERNEL}-${MACHINE}
 
 docker-image: docker-collector
 	@docker build -t cilium/docker-collector:latest .
 
 update-godeps:
 	@./scripts/update-godeps.sh
+
+all: tests
