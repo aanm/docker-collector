@@ -4,6 +4,7 @@ utils
 scripts
 Dockerfile
 Makefile
+docker-compose.yml
 *.go
 .*
 *swp
