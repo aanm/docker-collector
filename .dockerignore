@@ -1,10 +1,9 @@
-Godeps
 docs
-utils
 scripts
-Dockerfile
-Makefile
+docker-collector-Linux-*
 docker-compose.yml
-*.go
+Dockerfile*
+Makefile
+README.md
 .*
 *swp
