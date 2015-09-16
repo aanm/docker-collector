@@ -19,8 +19,8 @@ clean:
 	@godep go clean -i
 	@rm docker-collector-${KERNEL}-${MACHINE}
 
-docker-image: docker-collector
-	@docker build -t cilium/docker-collector:latest .
+collector-image:
+	@./scripts/build-collector-dev-image.sh
 
 update-godeps:
 	@./scripts/update-godeps.sh
