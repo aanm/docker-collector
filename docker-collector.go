@@ -199,46 +199,48 @@ func listenForEvents(event *d.Event, ec chan error, args ...interface{}) {
 	if event != nil {
 		docker := args[0].(uc.Docker)
 		containers := args[1].(*ContainersRegistry)
-		log.Debug("Msg received %s", event)
-		containersMutex.Lock()
-		switch event.Status {
-		case "create":
-			break
-		case "start":
-			if dic, err := docker.InspectContainer(event.Id); err == nil {
-				matches := false
-				if skipRegFilter != "" {
-					if match, _ := regexp.MatchString(skipRegFilter, dic.Name); match {
-						matches = true
+		go func(event d.Event) {
+			log.Debug("Msg received %s", event)
+			containersMutex.Lock()
+			switch event.Status {
+			case "create":
+				break
+			case "start":
+				if dic, err := docker.InspectContainer(event.Id); err == nil {
+					matches := false
+					if skipRegFilter != "" {
+						if match, _ := regexp.MatchString(skipRegFilter, dic.Name); match {
+							matches = true
+						}
+					}
+					if !matches {
+						log.Info("Container '%s' added to audit", dic.Name)
+						strpid := strconv.Itoa(dic.State.Pid)
+						containers.Activate(event.Id, strpid)
+						if err := containers.UpdateDBNode(); err != nil {
+							log.Error("Error while updating node: %v", err)
+						}
 					}
 				}
-				if !matches {
-					log.Info("Container '%s' added to audit", dic.Name)
-					strpid := strconv.Itoa(dic.State.Pid)
-					containers.Activate(event.Id, strpid)
+			case "stop":
+				if containers.Deactivate(event.Id) {
+					log.Info("Container '%s' paused from audit", event.Id)
+					if err := containers.UpdateDBNode(); err != nil {
+						log.Error("Error while updating node: %v", err)
+					}
+				}
+			case "destroy":
+				fallthrough
+			case "die":
+				if i := containers.GetSliceIndex(event.Id); i != -1 {
+					log.Info("Container '%s' removed from audit", containers.Node.Containers[i].Name)
+					containers.DeleteByIndex(i)
 					if err := containers.UpdateDBNode(); err != nil {
 						log.Error("Error while updating node: %v", err)
 					}
 				}
 			}
-		case "stop":
-			if containers.Deactivate(event.Id) {
-				log.Info("Container '%s' paused from audit", event.Id)
-				if err := containers.UpdateDBNode(); err != nil {
-					log.Error("Error while updating node: %v", err)
-				}
-			}
-		case "destroy":
-			fallthrough
-		case "die":
-			if i := containers.GetSliceIndex(event.Id); i != -1 {
-				log.Info("Container '%s' removed from audit", containers.Node.Containers[i].Name)
-				containers.DeleteByIndex(i)
-				if err := containers.UpdateDBNode(); err != nil {
-					log.Error("Error while updating node: %v", err)
-				}
-			}
-		}
-		containersMutex.Unlock()
+			containersMutex.Unlock()
+		}(*event)
 	}
 }
