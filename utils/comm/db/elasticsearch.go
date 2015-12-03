@@ -1,18 +1,25 @@
 package db
 
 import (
+	"encoding/json"
 	l "log"
+	"net"
 	"os"
 	"sync"
 	"time"
 
 	uc "github.com/cilium-team/docker-collector/utils/comm"
 
-	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/gopkg.in/olivere/elastic.v2"
+	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/gopkg.in/olivere/elastic.v3"
 )
 
-type EConn struct {
+type logstashConn struct {
+	lsConn net.Conn
+}
+
+type LogConn struct {
 	*elastic.Client
+	*logstashConn
 	indexName  string
 	configPath string
 }
@@ -54,10 +61,12 @@ const (
 	elasticDefaultPort  = "9200"
 	elasticDefaultIP    = "127.0.0.1"
 	elasticDefaultIndex = "docker-collector"
+	logstashDefaultPort = "8080"
+	logstashDefaultIP   = "logstash"
 )
 
 var (
-	ec         EConn
+	ec         LogConn
 	clientInit sync.Once
 )
 
@@ -87,7 +96,7 @@ func InitElasticDb(indexName, configPath string) error {
 	return nil
 }
 
-func setMappings(c EConn) error {
+func setMappings(c LogConn) error {
 	mappingPro := map[string]interface{}{
 		NodeTableName: map[string]interface{}{
 			"properties": map[string]interface{}{
@@ -114,23 +123,31 @@ func setMappings(c EConn) error {
 	return err
 }
 
-func NewElasticConn(indexName string, configPath string) (EConn, error) {
+func NewElasticConn(indexName string, configPath string) (LogConn, error) {
 	log.Debug("")
-	port := os.Getenv("ELASTIC_PORT")
-	if port == "" {
-		port = elasticDefaultPort
+	elasticPort := os.Getenv("ELASTIC_PORT")
+	if elasticPort == "" {
+		elasticPort = elasticDefaultPort
 	}
-	ip := os.Getenv("ELASTIC_IP")
-	if ip == "" {
-		ip = elasticDefaultIP
+	elasticIP := os.Getenv("ELASTIC_IP")
+	if elasticIP == "" {
+		elasticIP = elasticDefaultIP
+	}
+	logstashPort := os.Getenv("LOGSTASH_PORT")
+	if logstashPort == "" {
+		logstashPort = logstashDefaultPort
+	}
+	logstashIP := os.Getenv("LOGSTASH_IP")
+	if logstashIP == "" {
+		logstashIP = logstashDefaultIP
 	}
 	if indexName == "" {
 		indexName = elasticDefaultIndex
 	}
-	return NewElasticConnTo(ip, port, indexName, configPath)
+	return NewConnTo(elasticIP, elasticPort, logstashIP, logstashPort, indexName, configPath)
 }
 
-func NewElasticConnTo(ip, port, indexName, configPath string) (EConn, error) {
+func NewConnTo(elasticIP, elasticPort, logstashIP, logstashPort, indexName, configPath string) (LogConn, error) {
 	log.Debug("")
 	var outerr error
 	clientInit.Do(func() {
@@ -147,10 +164,10 @@ func NewElasticConnTo(ip, port, indexName, configPath string) (EConn, error) {
 		//		if err != nil {
 		//			l.Fatalf("Error while creating a log file: %s", err)
 		//		}
-		l.Printf("Trying to connect to ElasticSearch to '%s':'%s'\n", ip, port)
+		l.Printf("Trying to connect to ElasticSearch to '%s':'%s'\n", elasticIP, elasticPort)
 
-		ec.Client, err = elastic.NewClient(
-			elastic.SetURL("http://"+ip+":"+port),
+		ec.Client, outerr = elastic.NewClient(
+			elastic.SetURL("http://"+elasticIP+":"+elasticPort),
 			elastic.SetMaxRetries(10),
 			elastic.SetHealthcheckTimeoutStartup(30*time.Second),
 			elastic.SetSniff(false),
@@ -158,19 +175,48 @@ func NewElasticConnTo(ip, port, indexName, configPath string) (EConn, error) {
 			elastic.SetInfoLog(l.New(fo, "", l.LstdFlags)),
 			//elastic.SetTraceLog(l.New(ft, "", l.LstdFlags)),
 		)
-		if err == nil {
+		if outerr == nil {
 			l.Printf("Success!\n")
 		} else {
-			l.Printf("Error %+v\n", err)
+			l.Printf("Error %+v\n", outerr)
 		}
 		ec.indexName = indexName
 		ec.configPath = configPath
-		outerr = err
+		lc := logstashConn{}
+		ec.logstashConn = &lc
+		if outerr == nil {
+			outerr = ec.connectToLogstash(logstashIP + ":" + logstashPort)
+		}
+
 	})
 	return ec, outerr
 }
 
-func (c EConn) Close() {
+func (c LogConn) connectToLogstash(logstashAddr string) error {
+	var outerr error
+	retries := 0
+	// Give it one minute
+	for retries < 12 {
+		l.Printf("Trying to connect to Logstash to '%s'\n", logstashAddr)
+		c.lsConn, outerr = net.Dial("tcp", logstashAddr)
+		if outerr == nil {
+			l.Printf("Success!\n")
+			break
+		} else {
+			retries++
+			time.Sleep(5 * time.Second)
+			l.Printf("Error %+v\n", outerr)
+		}
+	}
+	return outerr
+}
+
+func (c LogConn) reconnectToLogstash() error {
+	rAddr := c.lsConn.RemoteAddr()
+	return c.connectToLogstash(rAddr.String())
+}
+
+func (c LogConn) Close() {
 }
 
 func convertToElasticNetStat(cont uc.Container, netInt uc.NetworkInterface, stat uc.NetworkStat) ENetworkStat {
@@ -184,25 +230,29 @@ func convertToElasticNetStat(cont uc.Container, netInt uc.NetworkInterface, stat
 	}
 }
 
-func (c EConn) UpdateNode(node *uc.Node) error {
+func (c LogConn) UpdateNode(node *uc.Node) error {
 	now := time.Now()
 	node.UpdatedAt = now
-	currIndexName := c.indexName + now.Format(indexFormatString)
-	bulkReq := c.Bulk().Index(currIndexName).Refresh(true)
 	for _, cont := range node.Containers {
 		cont.UpdateLastValue()
 		for _, inter := range cont.NetworkInterfaces {
 			for _, stat := range inter.NetworkStats {
 				enetstat := convertToElasticNetStat(cont, inter, stat)
 				enetstat.UpdatedAt = now
-				bulkReq.Add(elastic.NewBulkIndexRequest().Index(currIndexName).
-					Type(NodeTableName).Timestamp(enetstat.UpdatedAt.Format(time.RFC3339Nano)).Doc(enetstat))
+				enetstatBytes, err := json.Marshal(enetstat)
+				if err != nil {
+					log.Error("error while marshalling '%+v': \"%v\"", enetstat, err)
+				}
+				enetstatBytes = append(enetstatBytes, '\n')
+				_, err = c.lsConn.Write(enetstatBytes)
+				if err != nil {
+					log.Error("error while sending bytes to logstash '%+v': \"%v\"", enetstat, err)
+					if err := c.reconnectToLogstash(); err != nil {
+						log.Error("Fail to reconnect: %#v", err)
+					}
+				}
 			}
 		}
-	}
-	_, err := bulkReq.Do()
-	if err != nil {
-		return err
 	}
 	return nil
 }

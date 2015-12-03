@@ -46,6 +46,10 @@ func (client *NopClient) ContainerChanges(id string) ([]*dockerclient.ContainerC
 	return nil, ErrNoEngine
 }
 
+func (client *NopClient) AttachContainer(id string, options *dockerclient.AttachOptions) (io.ReadCloser, error) {
+	return nil, ErrNoEngine
+}
+
 func (client *NopClient) StartContainer(id string, config *dockerclient.HostConfig) error {
 	return ErrNoEngine
 }
@@ -95,6 +99,10 @@ func (client *NopClient) Version() (*dockerclient.Version, error) {
 }
 
 func (client *NopClient) PullImage(name string, auth *dockerclient.AuthConfig) error {
+	return ErrNoEngine
+}
+
+func (client *NopClient) PushImage(name, tag string, auth *dockerclient.AuthConfig) error {
 	return ErrNoEngine
 }
 
@@ -148,4 +156,36 @@ func (client *NopClient) BuildImage(image *dockerclient.BuildImage) (io.ReadClos
 
 func (client *NopClient) ListVolumes() ([]*dockerclient.Volume, error) {
 	return nil, ErrNoEngine
+}
+
+func (client *NopClient) RemoveVolume(name string) error {
+	return ErrNoEngine
+}
+
+func (client *NopClient) CreateVolume(request *dockerclient.VolumeCreateRequest) (*dockerclient.Volume, error) {
+	return nil, ErrNoEngine
+}
+
+func (client *NopClient) ListNetworks(filters string) ([]*dockerclient.NetworkResource, error) {
+	return nil, ErrNoEngine
+}
+
+func (client *NopClient) InspectNetwork(id string) (*dockerclient.NetworkResource, error) {
+	return nil, ErrNoEngine
+}
+
+func (client *NopClient) CreateNetwork(config *dockerclient.NetworkCreate) (*dockerclient.NetworkCreateResponse, error) {
+	return nil, ErrNoEngine
+}
+
+func (client *NopClient) ConnectNetwork(id, container string) error {
+	return ErrNoEngine
+}
+
+func (client *NopClient) DisconnectNetwork(id, container string) error {
+	return ErrNoEngine
+}
+
+func (client *NopClient) RemoveNetwork(id string) error {
+	return ErrNoEngine
 }

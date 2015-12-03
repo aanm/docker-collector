@@ -12,17 +12,27 @@ collector:
     - ELASTIC_PORT=9200
   links:
     - elastic
+    - logstash
 
 elastic:
-  image: elasticsearch:1.7.1
-  command: elasticsearch
+  image: elasticsearch:2.1.0
+  command: elasticsearch -Des.network.bind_host=_non_loopback:ipv4_
   container_name: docker-collector-elastic
   ports:
     - 9200:9200
     - 9300:9300
 
+logstash:
+  image: logstash:2.1.0
+  command: -f /logstash.conf
+  container_name: docker-collector-logstash
+  volumes:
+    - $PWD/configs/logstash.conf:/logstash.conf
+  links:
+    - elastic
+
 kibana:
-  image: kibana:4.1.1
+  image: kibana:4.3.0
   container_name: docker-collector-kibana
   environment:
     - ELASTICSEARCH_URL=http://elastic:9200

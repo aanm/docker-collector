@@ -9,7 +9,7 @@ import (
 
 	uc "github.com/cilium-team/docker-collector/utils/comm"
 
-	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/gopkg.in/olivere/elastic.v2"
+	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/gopkg.in/olivere/elastic.v3"
 )
 
 const (
@@ -65,7 +65,7 @@ type kibanaDashboard struct {
 	kibanaStruct
 }
 
-func (c EConn) CreateCluster() error {
+func (c LogConn) CreateCluster() error {
 	configs, err := readConfigFile(c.configPath + string(filepath.Separator) + configsFilename)
 	if err != nil {
 		return err
@@ -120,7 +120,7 @@ func (c EConn) CreateCluster() error {
 	return nil
 }
 
-func (c EConn) put(dashBoardName string, p panel) (*elastic.IndexResult, error) {
+func (c LogConn) put(dashBoardName string, p panel) (*elastic.IndexResponse, error) {
 	getResult, err := c.Get().Index(kibanaIndex).Type("dashboard").Id(dashBoardName).Do()
 	if err != nil {
 		return nil, err
@@ -211,7 +211,7 @@ func replaceNodeNameOnVisualization(e *elasticBody, name string) {
 	}
 }
 
-func (c EConn) CreateNode(node *uc.Node) error {
+func (c LogConn) CreateNode(node *uc.Node) error {
 	templates, err := readConfigFile(c.configPath + string(filepath.Separator) + templateFilename)
 	if err != nil {
 		return err
@@ -265,7 +265,7 @@ func (c EConn) CreateNode(node *uc.Node) error {
 	return nil
 }
 
-func (c EConn) createSingleIS(typeStr string, configs []elasticBody) (*elastic.IndexService, error) {
+func (c LogConn) createSingleIS(typeStr string, configs []elasticBody) (*elastic.IndexService, error) {
 	cfgType := filterByType(typeStr, configs)
 	if len(cfgType) == 0 {
 		return nil, fmt.Errorf("type '%s' not found in configuration files", typeStr)
@@ -273,7 +273,7 @@ func (c EConn) createSingleIS(typeStr string, configs []elasticBody) (*elastic.I
 	return c.Index().Index(cfgType[0].Index).Type(cfgType[0].Type).Refresh(true).Id(cfgType[0].ID).BodyJson(cfgType[0].Source), nil
 }
 
-func (c EConn) createBulkIS(typeStr string, configs []elasticBody) (*elastic.BulkService, error) {
+func (c LogConn) createBulkIS(typeStr string, configs []elasticBody) (*elastic.BulkService, error) {
 	cfgType := filterByType(typeStr, configs)
 
 	if len(cfgType) == 0 {
@@ -311,7 +311,7 @@ func filterByType(typeStr string, eBS []elasticBody) []elasticBody {
 	return filteredEBS
 }
 
-func (c EConn) getDashBoardName() string {
+func (c LogConn) getDashBoardName() string {
 	dashboardName := defaultDashboardName
 	configs, err := readConfigFile(c.configPath + string(filepath.Separator) + configsFilename)
 	if err != nil {

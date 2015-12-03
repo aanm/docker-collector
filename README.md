@@ -71,7 +71,16 @@ needs to be slightly extended to configure Elastic cluster discovery.
 
 ```bash
 docker run -d --name docker-collector-elasticsearch -p 9200:9200 -p 9300:9300 \
-	elasticsearch:1.7.1 elasticsearch
+	elasticsearch:2.1.0 elasticsearch
+```
+
+### Start Logstash
+
+Run your local Logstash instance using docker.
+
+```bash
+docker run -d --name docker-collector-logstash -p LOGSTASH_PORT:8080 \
+    logstash:2.1.0 logstash -f $PWD/configs/logstash.conf
 ```
 
 ### Start docker-collector
@@ -81,6 +90,7 @@ You can run `docker-collector` as a Docker container like this:
 ```
 docker run -d --name docker-collector --privileged -h "$(hostname)" \
         --pid host -e ELASTIC_IP=ELASTIC_SEARCH_IP \
+        -e LOGSTASH_IP=LOGSTASH_IP -e LOGSTASH_PORT=LOGSTASH_PORT \
         -v /var/run/docker.sock:/var/run/docker.sock \
         cilium/docker-collector -f 'docker-collector.*'
 ```
@@ -96,7 +106,11 @@ docker run -d --name docker-collector --privileged -h "$(hostname)" \
     communicate with the ElasticSearch. Since we are exposing the port
     9200 (port used to transmit data) `docker-collector` will communicate
     to the given IP address, usually a local one is enough. (Note:
-    It can't be 127.0.0.1 but it can be docker's bridge IP 172.17.42.1)
+    It can't be 127.0.0.1 but it can be the IP given by docker, for example:
+    172.17.0.11)
+  * `-e LOGSTASH_IP=LOGSTASH_IP` - Environment variable used to communicate
+    with the Logstash. You may also use links instead of specifying an IP
+    address. Running it like `--link docker-collector-logstash:logstash`.
   * `-v /var/run/docker.sock:/var/run/docker.sock` - Used to find which
     containers are running in the local host.
 

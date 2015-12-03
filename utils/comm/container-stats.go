@@ -244,7 +244,7 @@ func (cont *Container) UpdateNetInterfaces() {
 }
 
 func BuildNetworkIntPath(netIntName, statName string) string {
-	log.Debug("", netIntName)
-	log.Debug("", statName)
+	log.Debug("netIntName: %v", netIntName)
+	log.Debug("statName: %v", statName)
 	return netStatsBasePath + netIntName + stats + statName
 }

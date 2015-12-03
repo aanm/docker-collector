@@ -50,6 +50,11 @@ func (client *MockClient) ContainerChanges(id string) ([]*dockerclient.Container
 	return args.Get(0).([]*dockerclient.ContainerChanges), args.Error(1)
 }
 
+func (client *MockClient) AttachContainer(id string, options *dockerclient.AttachOptions) (io.ReadCloser, error) {
+	args := client.Mock.Called(id, options)
+	return args.Get(0).(io.ReadCloser), args.Error(1)
+}
+
 func (client *MockClient) StartContainer(id string, config *dockerclient.HostConfig) error {
 	args := client.Mock.Called(id, config)
 	return args.Error(0)
@@ -108,6 +113,11 @@ func (client *MockClient) Version() (*dockerclient.Version, error) {
 
 func (client *MockClient) PullImage(name string, auth *dockerclient.AuthConfig) error {
 	args := client.Mock.Called(name, auth)
+	return args.Error(0)
+}
+
+func (client *MockClient) PushImage(name string, tag string, auth *dockerclient.AuthConfig) error {
+	args := client.Mock.Called(name, tag, auth)
 	return args.Error(0)
 }
 
@@ -174,4 +184,44 @@ func (client *MockClient) BuildImage(image *dockerclient.BuildImage) (io.ReadClo
 func (client *MockClient) ListVolumes() ([]*dockerclient.Volume, error) {
 	args := client.Mock.Called()
 	return args.Get(0).([]*dockerclient.Volume), args.Error(1)
+}
+
+func (client *MockClient) RemoveVolume(name string) error {
+	args := client.Mock.Called(name)
+	return args.Error(0)
+}
+
+func (client *MockClient) CreateVolume(request *dockerclient.VolumeCreateRequest) (*dockerclient.Volume, error) {
+	args := client.Mock.Called(request)
+	return args.Get(0).(*dockerclient.Volume), args.Error(1)
+}
+
+func (client *MockClient) ListNetworks(filters string) ([]*dockerclient.NetworkResource, error) {
+	args := client.Mock.Called(filters)
+	return args.Get(0).([]*dockerclient.NetworkResource), args.Error(1)
+}
+
+func (client *MockClient) InspectNetwork(id string) (*dockerclient.NetworkResource, error) {
+	args := client.Mock.Called(id)
+	return args.Get(0).(*dockerclient.NetworkResource), args.Error(1)
+}
+
+func (client *MockClient) CreateNetwork(config *dockerclient.NetworkCreate) (*dockerclient.NetworkCreateResponse, error) {
+	args := client.Mock.Called(config)
+	return args.Get(0).(*dockerclient.NetworkCreateResponse), args.Error(1)
+}
+
+func (client *MockClient) ConnectNetwork(id, container string) error {
+	args := client.Mock.Called(id, container)
+	return args.Error(0)
+}
+
+func (client *MockClient) DisconnectNetwork(id, container string) error {
+	args := client.Mock.Called(id, container)
+	return args.Error(0)
+}
+
+func (client *MockClient) RemoveNetwork(id string) error {
+	args := client.Mock.Called(id)
+	return args.Error(0)
 }

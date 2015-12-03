@@ -2,17 +2,12 @@ package system
 
 import (
 	"bufio"
-	"errors"
 	"io"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/cilium-team/docker-collector/Godeps/_workspace/src/github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/units"
-)
-
-var (
-	ErrMalformed = errors.New("malformed file")
 )
 
 // ReadMemInfo retrieves memory statistics of the host system and returns a

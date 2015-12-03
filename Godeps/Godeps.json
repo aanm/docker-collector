@@ -1,31 +1,31 @@
 {
 	"ImportPath": "github.com/cilium-team/docker-collector",
-	"GoVersion": "go1.5",
+	"GoVersion": "go1.5.1",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/docker/docker/pkg/units",
-			"Comment": "v1.4.1-6094-g58ae808",
-			"Rev": "58ae808d426d1ad524b9088b02c9f4df951a10d8"
+			"Comment": "v1.4.1-8206-g580534b",
+			"Rev": "580534ba2e71782d65237170d4ad6356760042c7"
 		},
 		{
 			"ImportPath": "github.com/fsouza/go-dockerclient",
-			"Rev": "9ff3a0b2d27e65b3865609e0cbba9fb0511a781b"
+			"Rev": "dc4295a98977ab5b1983051bc169b784c4b423df"
 		},
 		{
 			"ImportPath": "github.com/op/go-logging",
-			"Rev": "e8d5414f0947014548c2334044a0fac13187dfee"
+			"Rev": "f2de3fa73ede49624df5ca7467011ac4fcd43635"
 		},
 		{
 			"ImportPath": "github.com/samalba/dockerclient",
-			"Rev": "77b723e2c0d07a21cc9483dc6108f95bd403b576"
+			"Rev": "82381805d3533c97cec74e1cc79b00ef45774571"
 		},
 		{
-			"ImportPath": "gopkg.in/olivere/elastic.v2",
-			"Comment": "v2.0.7",
-			"Rev": "34055ce91f8c34ab593d35cc77fedd41b7b08baa"
+			"ImportPath": "gopkg.in/olivere/elastic.v3",
+			"Comment": "v3.0.7",
+			"Rev": "ec88a89966d87deda1c191c04c09c0c352411c7f"
 		}
 	]
 }

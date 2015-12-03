@@ -1,5 +1,10 @@
-.PHONY: tests docker-collector-production docker-collector clean docker-image
-
+.PHONY: tests \
+	docker-collector-production \
+	docker-collector \
+	clean \
+	collector-image \
+	update-godeps \
+	all
 
 KERNEL:= $(shell uname -s)
 MACHINE := $(shell uname -m)

@@ -1,4 +1,4 @@
-[ 
+[
     {
       "_index" : ".kibana",
       "_type" : "visualization",
@@ -27,8 +27,8 @@
     }, {
       "_index" : ".kibana",
       "_type" : "config",
-      "_id" : "4.1.1",
-      "_source":{"buildNum":7489,"defaultIndex":"[docker-collector-]YYYY-MM-DD"}
+      "_id" : "4.3.0",
+      "_source":{"buildNum":9369,"defaultIndex":"[docker-collector-]YYYY-MM-DD"}
     }, {
       "_index" : ".kibana",
       "_type" : "dashboard",
