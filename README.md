@@ -80,7 +80,8 @@ Run your local Logstash instance using docker.
 
 ```bash
 docker run -d --name docker-collector-logstash -p LOGSTASH_PORT:8080 \
-    logstash:2.1.0 logstash -f $PWD/configs/logstash.conf
+    -v $PWD/configs/logstash.conf:/logstash.conf \
+    logstash:2.1.0 logstash -f /logstash.conf
 ```
 
 ### Start docker-collector
